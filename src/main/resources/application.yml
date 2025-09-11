@@ -1,0 +1,19 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: quello
+
+---
+# 数据库
+spring:
+  datasource:
+    dynamic: # 多数据源配置
+      primary: main
+      strict: false
+      datasource:
+        main:
+          url: jdbc:mysql://182.61.42.191:3306/quello?profileSQL=false&rewriteBatchedStatements=true&serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8&useSSL=false&allowMultiQueries=true
+          username: db_admin
+          password: "!%1baidu1%!"
