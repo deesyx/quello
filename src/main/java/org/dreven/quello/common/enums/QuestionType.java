@@ -10,6 +10,9 @@ public enum QuestionType {
     INTERACTION("交互"),
     PERFORMANCE("性能"),
     VISUAL("视觉"),
+    DATA("数据"),
+    LOGIC("逻辑"),
+    SAFE("安全"),
     OTHER("其他");
 
     private final String value;
