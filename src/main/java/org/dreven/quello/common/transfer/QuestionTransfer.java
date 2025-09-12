@@ -1,6 +1,6 @@
 package org.dreven.quello.common.transfer;
 
-import org.dreven.quello.controller.dto.QuestionDTO;
+import org.dreven.quello.controller.dto.question.QuestionDTO;
 import org.dreven.quello.dao.entity.Question;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;

@@ -1,13 +1,18 @@
 package org.dreven.quello.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.dreven.quello.controller.dto.QuestionDTO;
+import org.dreven.quello.common.transfer.QuestionTransfer;
+import org.dreven.quello.controller.dto.base.PageResult;
+import org.dreven.quello.controller.dto.question.QuestionDTO;
+import org.dreven.quello.controller.dto.question.QuestionSearchReq;
 import org.dreven.quello.dao.entity.Question;
 import org.dreven.quello.dao.mapper.QuestionMapper;
-import org.dreven.quello.common.transfer.QuestionTransfer;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -21,5 +26,18 @@ public class QuestionService {
                 .eq(Question::getQuestionId, questionId)
         );
         return QuestionTransfer.INSTANCE.toDTO(question);
+    }
+
+    public PageResult<QuestionDTO> search(QuestionSearchReq req) {
+        Page<Question> page = new Page<>(req.getPageNo(), req.getPageSize());
+        List<Question> ans = questionMapper.search(page, req);
+
+        PageResult<QuestionDTO> pageResult = new PageResult<>();
+        pageResult.setList(ans.stream().map(QuestionTransfer.INSTANCE::toDTO).toList());
+        pageResult.setPageSize(page.getSize());
+        pageResult.setCurrentPage(page.getCurrent());
+        pageResult.setTotalPages(page.getPages());
+        pageResult.setTotal(page.getTotal());
+        return pageResult;
     }
 }

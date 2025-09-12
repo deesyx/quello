@@ -1,4 +1,4 @@
-package org.dreven.quello.controller.dto;
+package org.dreven.quello.controller.dto.question;
 
 import lombok.Data;
 import org.dreven.quello.common.enums.QuestionSeverity;

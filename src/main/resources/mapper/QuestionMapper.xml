@@ -2,4 +2,19 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.dreven.quello.dao.mapper.QuestionMapper">
 
+    <select id="search" resultType="org.dreven.quello.dao.entity.Question">
+        select *
+        from question
+        where 1=1
+        <if test="req.title != null and req.title != ''">
+            and title = #{req.title}
+        </if>
+        <if test="req.status != null">
+            and status = #{req.status}
+        </if>
+        <if test="req.questionType != null">
+            and question_type = #{req.questionType}
+        </if>
+        order by updated_at desc
+    </select>
 </mapper>
