@@ -1,4 +1,4 @@
-package org.dreven.quello.transfer;
+package org.dreven.quello.common.transfer;
 
 import org.dreven.quello.controller.dto.QuestionDTO;
 import org.dreven.quello.dao.entity.Question;

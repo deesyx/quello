@@ -1,6 +1,9 @@
 package org.dreven.quello.controller.dto;
 
 import lombok.Data;
+import org.dreven.quello.common.enums.QuestionSeverity;
+import org.dreven.quello.common.enums.QuestionStatus;
+import org.dreven.quello.common.enums.QuestionType;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -35,17 +38,17 @@ public class QuestionDTO {
     /**
      * 问题类型
      */
-    private String questionType;
+    private QuestionType questionType;
 
     /**
      * 严重等级
      */
-    private String severity;
+    private QuestionSeverity severity;
 
     /**
      * 当前状态
      */
-    private String status;
+    private QuestionStatus status;
 
     /**
      * 优先级

@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.dreven.quello.controller.dto.QuestionDTO;
 import org.dreven.quello.dao.entity.Question;
 import org.dreven.quello.dao.mapper.QuestionMapper;
-import org.dreven.quello.transfer.QuestionTransfer;
+import org.dreven.quello.common.transfer.QuestionTransfer;
 import org.springframework.stereotype.Service;
 
 @Slf4j
