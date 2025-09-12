@@ -26,6 +26,7 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
     // 添加mapstruct依赖
@@ -38,6 +39,8 @@ dependencies {
     runtimeOnly("com.mysql:mysql-connector-j")
     implementation("com.baomidou:mybatis-plus-spring-boot3-starter:3.5.14")
     implementation("com.baomidou:dynamic-datasource-spring-boot3-starter:4.3.1")
+
+    implementation("cn.hutool:hutool-all:5.8.40")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
