@@ -1,6 +1,7 @@
 package org.dreven.quello.controller.dto.question;
 
 import lombok.Data;
+import org.dreven.quello.common.enums.QuestionPriority;
 import org.dreven.quello.common.enums.QuestionSeverity;
 import org.dreven.quello.common.enums.QuestionStatus;
 import org.dreven.quello.common.enums.QuestionType;
@@ -53,7 +54,7 @@ public class QuestionDTO {
     /**
      * 优先级
      */
-    private String priority;
+    private QuestionPriority priority;
 
     /**
      * 计划解决时间
