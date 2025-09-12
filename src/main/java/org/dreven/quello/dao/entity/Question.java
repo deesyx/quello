@@ -1,20 +1,18 @@
 package org.dreven.quello.dao.entity;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.dreven.quello.common.enums.QuestionPriority;
 import org.dreven.quello.common.enums.QuestionSeverity;
 import org.dreven.quello.common.enums.QuestionStatus;
 import org.dreven.quello.common.enums.QuestionType;
+import org.dreven.quello.dao.entity.base.BaseDO;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class Question {
-    /**
-     * 主键ID
-     */
-    private Long id;
+public class Question extends BaseDO {
 
     /**
      * 问题ID
@@ -75,14 +73,4 @@ public class Question {
      * 责任人
      */
     private String responsiblePerson;
-
-    /**
-     * 创建时间
-     */
-    private LocalDateTime createdAt;
-
-    /**
-     * 更新时间
-     */
-    private LocalDateTime updatedAt;
 }

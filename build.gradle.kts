@@ -38,6 +38,7 @@ dependencies {
     // 数据库
     runtimeOnly("com.mysql:mysql-connector-j")
     implementation("com.baomidou:mybatis-plus-spring-boot3-starter:3.5.14")
+    implementation("com.baomidou:mybatis-plus-jsqlparser:3.5.14")
     implementation("com.baomidou:dynamic-datasource-spring-boot3-starter:4.3.1")
 
     implementation("cn.hutool:hutool-all:5.8.40")
