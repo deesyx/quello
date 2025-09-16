@@ -1,23 +1,21 @@
-package org.dreven.quello.dao.entity;
+package org.dreven.quello.controller.dto.question;
 
-import com.baomidou.mybatisplus.annotation.Version;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import org.dreven.quello.common.enums.QuestionPriority;
 import org.dreven.quello.common.enums.QuestionSeverity;
 import org.dreven.quello.common.enums.QuestionStatus;
 import org.dreven.quello.common.enums.QuestionType;
-import org.dreven.quello.dao.entity.base.BaseDO;
 
 import java.time.LocalDate;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
-public class Question extends BaseDO {
+public class QuestionUpdateReq {
 
     /**
      * 问题ID
      */
+    @NotNull
     private String questionId;
 
     /**
@@ -78,6 +76,7 @@ public class Question extends BaseDO {
     /**
      * 版本号
      */
-    @Version
+    @NotNull
     private Long version;
+
 }

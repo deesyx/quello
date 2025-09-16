@@ -37,4 +37,8 @@ public class ServiceException extends RuntimeException {
         this.message = message;
     }
 
+    public ServiceException setMessage(String message) {
+        this.message = message;
+        return this;
+    }
 }
