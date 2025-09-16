@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.dreven.quello.common.enums.QuestionStatus;
 import org.dreven.quello.common.transfer.QuestionTransfer;
 import org.dreven.quello.controller.dto.base.PageResult;
+import org.dreven.quello.controller.dto.question.QuestionCreateReq;
 import org.dreven.quello.controller.dto.question.QuestionDTO;
 import org.dreven.quello.controller.dto.question.QuestionSearchReq;
 import org.dreven.quello.dao.entity.Question;
@@ -39,5 +41,17 @@ public class QuestionService {
         pageResult.setTotalPages(page.getPages());
         pageResult.setTotal(page.getTotal());
         return pageResult;
+    }
+
+    public Boolean createQuestion(QuestionCreateReq req) {
+        Question question = QuestionTransfer.INSTANCE.toEntity(req);
+        question.setQuestionId(generateQuestionId());
+        question.setStatus(QuestionStatus.PENDING);
+        questionMapper.insert(question);
+        return true;
+    }
+
+    private String generateQuestionId() {
+        return "Q" + System.currentTimeMillis();
     }
 }

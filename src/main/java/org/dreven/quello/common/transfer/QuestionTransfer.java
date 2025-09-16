@@ -1,5 +1,6 @@
 package org.dreven.quello.common.transfer;
 
+import org.dreven.quello.controller.dto.question.QuestionCreateReq;
 import org.dreven.quello.controller.dto.question.QuestionDTO;
 import org.dreven.quello.dao.entity.Question;
 import org.mapstruct.Mapper;
@@ -13,4 +14,6 @@ public interface QuestionTransfer {
     QuestionDTO toDTO(Question question);
     
     Question toEntity(QuestionDTO questionDTO);
+
+    Question toEntity(QuestionCreateReq req);
 }
