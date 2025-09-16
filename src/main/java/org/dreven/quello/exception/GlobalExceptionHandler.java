@@ -1,16 +1,19 @@
 package org.dreven.quello.exception;
 
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
+import cn.hutool.core.util.StrUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dreven.quello.controller.dto.base.CommonResult;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.Arrays;
+import java.util.Objects;
 
 import static org.dreven.quello.exception.GlobalErrorCodeConstants.*;
 
@@ -40,11 +43,20 @@ public class GlobalExceptionHandler {
     /**
      * 处理 Validator 校验不通过产生的异常
      */
-    @ExceptionHandler(value = ConstraintViolationException.class)
-    public ResponseEntity<CommonResult<?>> constraintViolationExceptionHandler(ConstraintViolationException ex) {
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    public ResponseEntity<CommonResult<?>> constraintViolationExceptionHandler(MethodArgumentNotValidException ex) {
         log.warn("[constraintViolationExceptionHandler]", ex);
-        ConstraintViolation<?> constraintViolation = ex.getConstraintViolations().iterator().next();
-        CommonResult<Object> error = CommonResult.error(BAD_REQUEST.getCode(), String.format("请求参数不正确:%s", constraintViolation.getMessage()));
+        Object[] detailMessageArguments = ex.getDetailMessageArguments();
+        String msg = "";
+        if (detailMessageArguments != null) {
+            msg = Arrays.stream(detailMessageArguments)
+                    .filter(Objects::nonNull)
+                    .filter(it -> it instanceof String)
+                    .map(it -> (String) it)
+                    .filter(StrUtil::isNotBlank)
+                    .findFirst().orElse("");
+        }
+        CommonResult<Object> error = CommonResult.error(BAD_REQUEST.getCode(), String.format("请求参数不正确:%s", msg));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
