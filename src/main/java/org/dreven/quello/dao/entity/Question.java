@@ -73,4 +73,9 @@ public class Question extends BaseDO {
      * 责任人
      */
     private String responsiblePerson;
+
+    /**
+     * 版本号
+     */
+    private Long version;
 }

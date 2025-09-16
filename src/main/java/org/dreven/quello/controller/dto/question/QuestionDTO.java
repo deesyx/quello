@@ -77,6 +77,11 @@ public class QuestionDTO {
     private String responsiblePerson;
 
     /**
+     * 版本号
+     */
+    private Long version;
+
+    /**
      * 创建时间
      */
     private LocalDateTime createdAt;
