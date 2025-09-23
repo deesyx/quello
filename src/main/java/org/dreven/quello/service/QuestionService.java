@@ -55,7 +55,7 @@ public class QuestionService {
     public Boolean createQuestion(QuestionCreateReq req) {
         Question question = QuestionTransfer.INSTANCE.toEntity(req);
         question.setQuestionId("Q" + System.currentTimeMillis());
-        question.setStatus(QuestionStatus.PENDING);
+        question.setStatus(QuestionStatus.REVIEWING);
         questionMapper.insert(question);
         return true;
     }
