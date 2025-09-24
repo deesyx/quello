@@ -7,10 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.dreven.quello.common.enums.Period;
 import org.dreven.quello.common.enums.QuestionStatus;
 import org.dreven.quello.common.utils.QuarterUtils;
-import org.dreven.quello.controller.dto.dashboard.DashDetailRsp;
-import org.dreven.quello.controller.dto.dashboard.DashTrendItemRsp;
-import org.dreven.quello.controller.dto.dashboard.DashboardOverviewRsp;
-import org.dreven.quello.controller.dto.dashboard.DashboardSearchReq;
+import org.dreven.quello.controller.dto.dashboard.*;
 import org.dreven.quello.dao.entity.Question;
 import org.dreven.quello.dao.mapper.QuestionMapper;
 import org.springframework.stereotype.Service;
@@ -39,6 +36,18 @@ public class DashboardService {
 
         DashboardOverviewRsp overview = getOverview(curQuestions, preQuestions, req);
         rsp.setOverview(overview);
+
+        List<DashDistributionItemRsp> statusDistributions = questionMapper.getDistributionByTag(req, "status");
+        rsp.setStatusDistributions(statusDistributions);
+
+        List<DashDistributionItemRsp> severityDistributions = questionMapper.getDistributionByTag(req, "severity");
+        rsp.setSeverityDistributions(severityDistributions);
+
+        List<DashDistributionItemRsp> questionTypeDistributions = questionMapper.getDistributionByTag(req, "question_type");
+        rsp.setQuestionTypeDistributions(questionTypeDistributions);
+
+        List<DashDistributionItemRsp> productModuleDistributions = questionMapper.getDistributionByTag(req, "product_module");
+        rsp.setProductModuleDistributions(productModuleDistributions);
 
         return rsp;
     }

@@ -61,4 +61,26 @@
         GROUP BY `time`
         ORDER BY `time`;
     </select>
+
+    <select id="getDistributionByTag"
+            resultType="org.dreven.quello.controller.dto.dashboard.DashDistributionItemRsp">
+        select ${tag} `key`, count(*) as `value`
+        from question
+        <where>
+            created_at >= #{req.periodStartDate} and created_at &lt;= #{req.periodEndDate}
+            <if test="req.productModule != null and req.productModule != ''">
+                and product_module = concat('%', #{req.productModule}, '%')
+            </if>
+
+            <if test="req.startDate != null">
+                and created_at >= #{req.startDate}
+            </if>
+
+            <if test="req.endDate != null">
+                and created_at &lt;= #{req.endDate}
+            </if>
+        </where>
+        group by `key`
+        order by `value` desc;
+    </select>
 </mapper>

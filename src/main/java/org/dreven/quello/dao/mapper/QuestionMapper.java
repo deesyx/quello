@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.dreven.quello.controller.dto.dashboard.DashDistributionItemRsp;
 import org.dreven.quello.controller.dto.dashboard.DashTrendItemRsp;
 import org.dreven.quello.controller.dto.dashboard.DashboardSearchReq;
 import org.dreven.quello.controller.dto.question.QuestionSearchReq;
@@ -15,6 +16,8 @@ import java.util.List;
 public interface QuestionMapper extends BaseMapper<Question> {
 
     List<Question> search(Page<Question> page, @Param("req") QuestionSearchReq req);
+
+    List<DashDistributionItemRsp> getDistributionByTag(@Param("req") DashboardSearchReq req, @Param("tag") String tag);
 
     List<DashTrendItemRsp> getQuestionTrendsByWeek(@Param("req") DashboardSearchReq req);
 
