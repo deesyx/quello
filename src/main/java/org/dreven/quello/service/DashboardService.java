@@ -1,5 +1,6 @@
 package org.dreven.quello.service;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,14 +33,8 @@ public class DashboardService {
         definePeriodDate(LocalDate.now(), req);
 
         DashDetailRsp rsp = new DashDetailRsp();
-        List<Question> curQuestions = questionMapper.selectList(new LambdaQueryWrapper<Question>()
-                .ge(Question::getCreatedAt, req.getPeriodStartDate())
-                .le(Question::getCreatedAt, req.getPeriodEndDate())
-        );
-        List<Question> preQuestions = questionMapper.selectList(new LambdaQueryWrapper<Question>()
-                .ge(Question::getCreatedAt, req.getPeriodStartDatePre())
-                .le(Question::getCreatedAt, req.getPeriodEndDatePre())
-        );
+        List<Question> curQuestions = getQuestions(req, req.getPeriodStartDate(), req.getPeriodEndDate());
+        List<Question> preQuestions = getQuestions(req, req.getPeriodStartDatePre(), req.getPeriodEndDatePre());
 
         DashboardOverviewRsp overview = getOverview(curQuestions, preQuestions, req);
         rsp.setOverview(overview);
@@ -74,12 +69,8 @@ public class DashboardService {
 
     private DashboardOverviewRsp getOverview(List<Question> curQuestions, List<Question> preQuestions, DashboardSearchReq req) {
         DashboardOverviewRsp overview = new DashboardOverviewRsp();
-        Long curTotalQuestions = questionMapper.selectCount(new LambdaQueryWrapper<Question>()
-                .le(Question::getCreatedAt, req.getPeriodEndDate())
-        );
-        Long preTotalQuestions = questionMapper.selectCount(new LambdaQueryWrapper<Question>()
-                .le(Question::getCreatedAt, req.getPeriodEndDatePre())
-        );
+        Long curTotalQuestions = countQuestions(req, req.getPeriodEndDate());
+        Long preTotalQuestions = countQuestions(req, req.getPeriodEndDatePre());
         overview.setTotalQuestions(curTotalQuestions.intValue());
         overview.setTotalQuestionsGr(BigDecimal.valueOf(curTotalQuestions - preTotalQuestions).divide(BigDecimal.valueOf(preTotalQuestions), 4, RoundingMode.HALF_UP));
 
@@ -150,5 +141,36 @@ public class DashboardService {
         overview.setOnScheduleResolutionRateGr(curOnScheduleResolutionRateRate.subtract(preOnScheduleResolutionRateRate));
 
         return overview;
+    }
+
+    private List<Question> getQuestions(DashboardSearchReq req, LocalDate startDate, LocalDate endDate) {
+        LambdaQueryWrapper<Question> queryWrapper = new LambdaQueryWrapper<Question>()
+                .ge(Question::getCreatedAt, startDate)
+                .le(Question::getCreatedAt, endDate);
+        if (StrUtil.isNotBlank(req.getProductModule())) {
+            queryWrapper.like(Question::getProductModule, req.getProductModule());
+        }
+        if (req.getStartDate() != null) {
+            queryWrapper.ge(Question::getCreatedAt, req.getStartDate());
+        }
+        if (req.getEndDate() != null) {
+            queryWrapper.le(Question::getCreatedAt, req.getEndDate());
+        }
+        return questionMapper.selectList(queryWrapper);
+    }
+
+    private Long countQuestions(DashboardSearchReq req, LocalDate endDate) {
+        LambdaQueryWrapper<Question> queryWrapper = new LambdaQueryWrapper<Question>()
+                .le(Question::getCreatedAt, endDate);
+        if (StrUtil.isNotBlank(req.getProductModule())) {
+            queryWrapper.like(Question::getProductModule, req.getProductModule());
+        }
+        if (req.getStartDate() != null) {
+            queryWrapper.ge(Question::getCreatedAt, req.getStartDate());
+        }
+        if (req.getEndDate() != null) {
+            queryWrapper.le(Question::getCreatedAt, req.getEndDate());
+        }
+        return questionMapper.selectCount(queryWrapper);
     }
 }
