@@ -19,7 +19,7 @@
     </select>
 
     <select id="getQuestionTrendsByWeek"
-            resultType="org.dreven.quello.controller.dto.dashboard.DashQuestionTrendItemRsp">
+            resultType="org.dreven.quello.controller.dto.dashboard.DashTrendItemRsp">
         SELECT CONCAT(YEAR(created_at), '-W', LPAD(WEEK(created_at, 3), 2, '0')) as `time`,
         COUNT(*) as `count`
         FROM question
@@ -41,7 +41,7 @@
     </select>
 
     <select id="getQuestionTrendsByMonth"
-            resultType="org.dreven.quello.controller.dto.dashboard.DashQuestionTrendItemRsp">
+            resultType="org.dreven.quello.controller.dto.dashboard.DashTrendItemRsp">
         SELECT CONCAT(YEAR(created_at), '-', LPAD(MONTH(created_at), 2, '0')) as `time`,
         COUNT(*) as `count`
         FROM question

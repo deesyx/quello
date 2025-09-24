@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
-public class DashQuestionTrendItemRsp {
+public class DashTrendItemRsp {
 
     @Schema(description = "时间")
     private String time;

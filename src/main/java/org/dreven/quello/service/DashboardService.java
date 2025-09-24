@@ -2,14 +2,13 @@ package org.dreven.quello.service;
 
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dreven.quello.common.enums.Period;
 import org.dreven.quello.common.enums.QuestionStatus;
 import org.dreven.quello.common.utils.QuarterUtils;
 import org.dreven.quello.controller.dto.dashboard.DashDetailRsp;
-import org.dreven.quello.controller.dto.dashboard.DashQuestionTrendItemRsp;
+import org.dreven.quello.controller.dto.dashboard.DashTrendItemRsp;
 import org.dreven.quello.controller.dto.dashboard.DashboardOverviewRsp;
 import org.dreven.quello.controller.dto.dashboard.DashboardSearchReq;
 import org.dreven.quello.dao.entity.Question;
@@ -22,7 +21,6 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Year;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -45,16 +43,13 @@ public class DashboardService {
         return rsp;
     }
 
-    public List<DashQuestionTrendItemRsp> getQuestionTrends(DashboardSearchReq req) {
-        definePeriodDate(LocalDate.now(), req);
-
-        List<DashQuestionTrendItemRsp> trends;
+    public List<DashTrendItemRsp> getQuestionTrends(DashboardSearchReq req) {
+        List<DashTrendItemRsp> trends;
         if (req.getPeriod() == Period.WEEK) {
             trends = questionMapper.getQuestionTrendsByWeek(req);
         } else {
             trends = questionMapper.getQuestionTrendsByMonth(req);
         }
-
         return trends;
     }
 
