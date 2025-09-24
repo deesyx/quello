@@ -2,12 +2,14 @@ package org.dreven.quello.service;
 
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dreven.quello.common.enums.Period;
 import org.dreven.quello.common.enums.QuestionStatus;
 import org.dreven.quello.common.utils.QuarterUtils;
 import org.dreven.quello.controller.dto.dashboard.DashDetailRsp;
+import org.dreven.quello.controller.dto.dashboard.DashQuestionTrendItemRsp;
 import org.dreven.quello.controller.dto.dashboard.DashboardOverviewRsp;
 import org.dreven.quello.controller.dto.dashboard.DashboardSearchReq;
 import org.dreven.quello.dao.entity.Question;
@@ -20,6 +22,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Year;
 import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -40,6 +43,19 @@ public class DashboardService {
         rsp.setOverview(overview);
 
         return rsp;
+    }
+
+    public List<DashQuestionTrendItemRsp> getQuestionTrends(DashboardSearchReq req) {
+        definePeriodDate(LocalDate.now(), req);
+
+        List<DashQuestionTrendItemRsp> trends;
+        if (req.getPeriod() == Period.WEEK) {
+            trends = questionMapper.getQuestionTrendsByWeek(req);
+        } else {
+            trends = questionMapper.getQuestionTrendsByMonth(req);
+        }
+
+        return trends;
     }
 
     public void definePeriodDate(LocalDate curDate, DashboardSearchReq req) {
@@ -143,10 +159,10 @@ public class DashboardService {
         return overview;
     }
 
-    private List<Question> getQuestions(DashboardSearchReq req, LocalDate startDate, LocalDate endDate) {
+    private List<Question> getQuestions(DashboardSearchReq req, LocalDate periodStartDate, LocalDate periodEndDate) {
         LambdaQueryWrapper<Question> queryWrapper = new LambdaQueryWrapper<Question>()
-                .ge(Question::getCreatedAt, startDate)
-                .le(Question::getCreatedAt, endDate);
+                .ge(Question::getCreatedAt, periodStartDate)
+                .le(Question::getCreatedAt, periodEndDate);
         if (StrUtil.isNotBlank(req.getProductModule())) {
             queryWrapper.like(Question::getProductModule, req.getProductModule());
         }
@@ -159,9 +175,9 @@ public class DashboardService {
         return questionMapper.selectList(queryWrapper);
     }
 
-    private Long countQuestions(DashboardSearchReq req, LocalDate endDate) {
+    private Long countQuestions(DashboardSearchReq req, LocalDate periodEndDate) {
         LambdaQueryWrapper<Question> queryWrapper = new LambdaQueryWrapper<Question>()
-                .le(Question::getCreatedAt, endDate);
+                .le(Question::getCreatedAt, periodEndDate);
         if (StrUtil.isNotBlank(req.getProductModule())) {
             queryWrapper.like(Question::getProductModule, req.getProductModule());
         }
