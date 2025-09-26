@@ -1,4 +1,4 @@
-package org.dreven.quello.service;
+package org.dreven.quello.service.service;
 
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;

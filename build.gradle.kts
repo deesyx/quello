@@ -47,6 +47,11 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
     implementation("com.github.xiaoymin:knife4j-openapi3-jakarta-spring-boot-starter:4.5.0")
 
+    // llm
+    implementation("com.alibaba:dashscope-sdk-java:2.21.10"){
+        exclude(group = "org.slf4j", module = "slf4j-simple")
+    }
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

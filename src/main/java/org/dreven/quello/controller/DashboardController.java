@@ -8,7 +8,7 @@ import org.dreven.quello.controller.dto.base.CommonResult;
 import org.dreven.quello.controller.dto.dashboard.DashDetailRsp;
 import org.dreven.quello.controller.dto.dashboard.DashTrendItemRsp;
 import org.dreven.quello.controller.dto.dashboard.DashboardSearchReq;
-import org.dreven.quello.service.DashboardService;
+import org.dreven.quello.service.service.DashboardService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
