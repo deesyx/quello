@@ -92,10 +92,14 @@ public class DashboardService {
         Long curTotalQuestions = countQuestions(req, req.getPeriodEndDate());
         Long preTotalQuestions = countQuestions(req, req.getPeriodEndDatePre());
         overview.setTotalQuestions(curTotalQuestions.intValue());
-        overview.setTotalQuestionsGr(BigDecimal.valueOf(curTotalQuestions - preTotalQuestions).divide(BigDecimal.valueOf(preTotalQuestions), 4, RoundingMode.HALF_UP));
+        if (preTotalQuestions != 0) {
+            overview.setTotalQuestionsGr(BigDecimal.valueOf(curTotalQuestions - preTotalQuestions).divide(BigDecimal.valueOf(preTotalQuestions), 4, RoundingMode.HALF_UP));
+        }
 
         overview.setNewQuestions(curQuestions.size());
-        overview.setNewQuestionsGr(BigDecimal.valueOf(curQuestions.size() - preQuestions.size()).divide(BigDecimal.valueOf(preQuestions.size()), 4, RoundingMode.HALF_UP));
+        if (!preQuestions.isEmpty()) {
+            overview.setNewQuestionsGr(BigDecimal.valueOf(curQuestions.size() - preQuestions.size()).divide(BigDecimal.valueOf(preQuestions.size()), 4, RoundingMode.HALF_UP));
+        }
 
         long curAdaptionQuestionCount = curQuestions.stream()
                 .filter(it -> !QuestionStatus.REVIEWING.equals(it.getStatus()) && !QuestionStatus.CLOSED.equals(it.getStatus()))
@@ -103,10 +107,12 @@ public class DashboardService {
         long preAdaptionQuestionCount = preQuestions.stream()
                 .filter(it -> !QuestionStatus.REVIEWING.equals(it.getStatus()) && !QuestionStatus.CLOSED.equals(it.getStatus()))
                 .count();
-        BigDecimal curAdaptionRate = BigDecimal.valueOf(curAdaptionQuestionCount).divide(BigDecimal.valueOf(curQuestions.size()), 4, RoundingMode.HALF_UP);
-        BigDecimal preAdaptionRate = BigDecimal.valueOf(preAdaptionQuestionCount).divide(BigDecimal.valueOf(preQuestions.size()), 4, RoundingMode.HALF_UP);
-        overview.setAdoptionRate(curAdaptionRate);
-        overview.setAdoptionRateGr(curAdaptionRate.subtract(preAdaptionRate));
+        if (!curQuestions.isEmpty() && !preQuestions.isEmpty()) {
+            BigDecimal curAdaptionRate = BigDecimal.valueOf(curAdaptionQuestionCount).divide(BigDecimal.valueOf(curQuestions.size()), 4, RoundingMode.HALF_UP);
+            BigDecimal preAdaptionRate = BigDecimal.valueOf(preAdaptionQuestionCount).divide(BigDecimal.valueOf(preQuestions.size()), 4, RoundingMode.HALF_UP);
+            overview.setAdoptionRate(curAdaptionRate);
+            overview.setAdoptionRateGr(curAdaptionRate.subtract(preAdaptionRate));
+        }
 
         long curResolvedQuestions = curQuestions.stream()
                 .filter(it -> QuestionStatus.RESOLVED.equals(it.getStatus()))
@@ -117,8 +123,6 @@ public class DashboardService {
         overview.setResolvedQuestions((int) curResolvedQuestions);
         if (preResolvedQuestions != 0) {
             overview.setResolvedQuestionsGr(BigDecimal.valueOf(curResolvedQuestions - preResolvedQuestions).divide(BigDecimal.valueOf(preResolvedQuestions), 4, RoundingMode.HALF_UP));
-        } else {
-            overview.setResolvedQuestionsGr(BigDecimal.ONE);
         }
 
         final LocalDate now = LocalDate.now();
@@ -142,10 +146,12 @@ public class DashboardService {
                     }
                 })
                 .count();
-        BigDecimal curOvertimeRate = BigDecimal.valueOf(curOvertimeQuestions).divide(BigDecimal.valueOf(curQuestions.size()), 4, RoundingMode.HALF_UP);
-        BigDecimal preOvertimeRate = BigDecimal.valueOf(preOvertimeQuestions).divide(BigDecimal.valueOf(preQuestions.size()), 4, RoundingMode.HALF_UP);
-        overview.setOvertimeRate(curOvertimeRate);
-        overview.setOvertimeRateGr(curOvertimeRate.subtract(preOvertimeRate));
+        if (!curQuestions.isEmpty() && !preQuestions.isEmpty()) {
+            BigDecimal curOvertimeRate = BigDecimal.valueOf(curOvertimeQuestions).divide(BigDecimal.valueOf(curQuestions.size()), 4, RoundingMode.HALF_UP);
+            BigDecimal preOvertimeRate = BigDecimal.valueOf(preOvertimeQuestions).divide(BigDecimal.valueOf(preQuestions.size()), 4, RoundingMode.HALF_UP);
+            overview.setOvertimeRate(curOvertimeRate);
+            overview.setOvertimeRateGr(curOvertimeRate.subtract(preOvertimeRate));
+        }
 
         long curOnScheduleResolutionRate = curQuestions.stream()
                 .filter(it -> it.getPlannedResolutionDate() != null && it.getActualResolutionDate() != null)
@@ -155,10 +161,12 @@ public class DashboardService {
                 .filter(it -> it.getPlannedResolutionDate() != null && it.getActualResolutionDate() != null)
                 .filter(it -> it.getPlannedResolutionDate().isAfter(it.getActualResolutionDate()))
                 .count();
-        BigDecimal curOnScheduleResolutionRateRate = BigDecimal.valueOf(curOnScheduleResolutionRate).divide(BigDecimal.valueOf(curQuestions.size()), 4, RoundingMode.HALF_UP);
-        BigDecimal preOnScheduleResolutionRateRate = BigDecimal.valueOf(preOnScheduleResolutionRate).divide(BigDecimal.valueOf(preQuestions.size()), 4, RoundingMode.HALF_UP);
-        overview.setOnScheduleResolutionRate(curOnScheduleResolutionRateRate);
-        overview.setOnScheduleResolutionRateGr(curOnScheduleResolutionRateRate.subtract(preOnScheduleResolutionRateRate));
+        if (!curQuestions.isEmpty() && !preQuestions.isEmpty()) {
+            BigDecimal curOnScheduleResolutionRateRate = BigDecimal.valueOf(curOnScheduleResolutionRate).divide(BigDecimal.valueOf(curQuestions.size()), 4, RoundingMode.HALF_UP);
+            BigDecimal preOnScheduleResolutionRateRate = BigDecimal.valueOf(preOnScheduleResolutionRate).divide(BigDecimal.valueOf(preQuestions.size()), 4, RoundingMode.HALF_UP);
+            overview.setOnScheduleResolutionRate(curOnScheduleResolutionRateRate);
+            overview.setOnScheduleResolutionRateGr(curOnScheduleResolutionRateRate.subtract(preOnScheduleResolutionRateRate));
+        }
 
         return overview;
     }
