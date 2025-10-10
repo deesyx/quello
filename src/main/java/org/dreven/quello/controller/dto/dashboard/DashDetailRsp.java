@@ -22,4 +22,7 @@ public class DashDetailRsp {
 
     @Schema(description = "产品模块分布")
     private List<DashDistributionItemRsp> productModuleDistributions;
+
+    @Schema(description = "高频参考方案")
+    private List<DashDistributionItemRsp> questionFrequencyDistributions;
 }

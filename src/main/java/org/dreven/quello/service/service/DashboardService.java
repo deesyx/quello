@@ -9,6 +9,7 @@ import org.dreven.quello.common.enums.QuestionStatus;
 import org.dreven.quello.common.utils.QuarterUtils;
 import org.dreven.quello.controller.dto.dashboard.*;
 import org.dreven.quello.dao.entity.Question;
+import org.dreven.quello.dao.mapper.QuestionFrequencyMapper;
 import org.dreven.quello.dao.mapper.QuestionMapper;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +27,7 @@ import java.util.List;
 public class DashboardService {
 
     private final QuestionMapper questionMapper;
+    private final QuestionFrequencyMapper questionFrequencyMapper;
 
     public DashDetailRsp getDetail(DashboardSearchReq req) {
         definePeriodDate(LocalDate.now(), req);
@@ -48,6 +50,10 @@ public class DashboardService {
 
         List<DashDistributionItemRsp> productModuleDistributions = questionMapper.getDistributionByTag(req, "product_module");
         rsp.setProductModuleDistributions(productModuleDistributions);
+
+        LocalDate dataDate = questionFrequencyMapper.getMaxDataDate();
+        List<DashDistributionItemRsp> questionDistributions = questionFrequencyMapper.getQuestionDistributions(dataDate);
+        rsp.setQuestionFrequencyDistributions(questionDistributions);
 
         return rsp;
     }
