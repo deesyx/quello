@@ -46,4 +46,11 @@ public class QuestionController {
     public CommonResult<Boolean> updateQuestion(@Valid @RequestBody QuestionUpdateReq req) {
         return CommonResult.success(questionService.updateQuestion(req));
     }
+
+    @PostMapping("/classification")
+    @Operation(summary = "分类问题")
+    public CommonResult<Boolean> classifyQuestions() {
+        questionService.classifyQuestions();
+        return CommonResult.success(true);
+    }
 }

@@ -7,6 +7,7 @@ import com.alibaba.dashscope.aigc.generation.GenerationResult;
 import com.alibaba.dashscope.common.Message;
 import com.alibaba.dashscope.common.ResponseFormat;
 import com.alibaba.dashscope.common.Role;
+import com.fasterxml.jackson.core.type.TypeReference;
 import io.reactivex.Flowable;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -79,7 +80,7 @@ public class DashScopeLLMClient extends BailianClient {
      * qwen-开源系列
      */
     @SneakyThrows
-    public <T> T getJsonAnswer(String modelName, String systemMessage, String userMessage, Class<T> clazz) {
+    public <T> T getJsonAnswer(String modelName, String systemMessage, String userMessage, TypeReference<T> typeReference) {
         Message systemMsg = Message.builder()
                 .role(Role.SYSTEM.getValue())
                 .content(systemMessage)
@@ -102,7 +103,7 @@ public class DashScopeLLMClient extends BailianClient {
         String output = extractStringOutput(result);
         log.info("模型输出：{}", output);
         try {
-            return JsonUtils.parseObject(output, clazz);
+            return JsonUtils.parseObject(output, typeReference);
         } catch (Exception e) {
             log.info("json转换失败", e);
             return null;
