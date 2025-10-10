@@ -2,6 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.dreven.quello.dao.mapper.QuestionFrequencyMapper">
 
+    <update id="increaseFrequency">
+        update question_frequency
+        set frequency = frequency + 1
+        where id = #{id}
+    </update>
+
     <select id="getMaxDataDate" resultType="java.time.LocalDate">
         select max(data_date) from question_frequency
     </select>

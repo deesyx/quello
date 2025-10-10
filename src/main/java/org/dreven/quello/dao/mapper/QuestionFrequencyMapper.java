@@ -16,4 +16,5 @@ public interface QuestionFrequencyMapper extends BaseMapper<QuestionFrequency> {
 
     List<DashDistributionItemRsp> getQuestionDistributions(@Param("dataDate")LocalDate dataDate);
 
+    void increaseFrequency(@Param("id") Long id);
 }

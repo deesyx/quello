@@ -67,6 +67,13 @@ public class QuestionService {
         question.setQuestionId("Q" + System.currentTimeMillis());
         question.setStatus(QuestionStatus.REVIEWING);
         questionMapper.insert(question);
+
+        try {
+            classifyQuestion(question);
+        } catch (Exception e) {
+            log.error("问题分类失败", e);
+        }
+
         return true;
     }
 
@@ -132,6 +139,40 @@ public class QuestionService {
         );
         for (QuestionFrequency questionFrequency : questionFrequencies) {
             questionFrequencyMapper.insert(questionFrequency);
+        }
+    }
+
+    public void classifyQuestion(Question question) {
+        LocalDate dataDate = questionFrequencyMapper.getMaxDataDate();
+        List<QuestionFrequency> questionFrequencies = questionFrequencyMapper.selectList(new LambdaQueryWrapper<QuestionFrequency>()
+                .eq(QuestionFrequency::getDataDate, dataDate)
+        );
+        if (questionFrequencies.isEmpty()) {
+            return;
+        }
+
+        Set<String> categories = questionFrequencies.stream().map(QuestionFrequency::getCategory).collect(Collectors.toSet());
+        String systemMessageTemplate = """
+                ## 任务
+                判断用户给出的问题是否属于下面的问题类目中（以json数组形式给出）：
+                %s
+                
+                ## 输出
+                若用户给出的问题属于给出的问题类目，则返回该类目名称；否则给该问题分类并返回新类目名称
+                """;
+        String systemMessage = String.format(systemMessageTemplate, JsonUtils.toJsonString(categories));
+        String userMessage = "问题为：" + question.getTitle();
+        String category = dashScopeLLMClient.getTextAnswer("qwen-max", systemMessage, userMessage);
+
+        QuestionFrequency questionFrequency = questionFrequencies.stream().filter(it -> it.getCategory().equals(category)).findFirst().orElse(null);
+        if (questionFrequency == null) {
+            questionFrequency = new QuestionFrequency();
+            questionFrequency.setCategory(category);
+            questionFrequency.setDataDate(dataDate);
+            questionFrequency.setFrequency(1);
+            questionFrequencyMapper.insert(questionFrequency);
+        } else {
+            questionFrequencyMapper.increaseFrequency(questionFrequency.getId());
         }
     }
 }
