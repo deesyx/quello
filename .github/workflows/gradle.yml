@@ -76,27 +76,27 @@ jobs:
             sudo systemctl restart my-test-app.service
             echo "部署到测试环境完成！"
 
-    prod-deploy:
-      # 6. 手动控制：设置为始终等待手动触发，不依赖push事件
-      if: false # 或使用更精确的条件：github.event_name == 'workflow_dispatch'
-      runs-on: ubuntu-latest
-      environment: production # 关联生产环境，便于权限管理和审计
-      permissions:
-        contents: write
-      steps:
-        - name: Checkout code for production
-          uses: actions/checkout@v4
-          with:
-            ref: master # 确保部署的是master分支的代码
-        - name: Deploy to Production
-          uses: appleboy/ssh-action@v0.1.10
-          with:
-            host: ${{ secrets.PROD_SERVER_HOST }}
-            username: root
-            key: ${{ secrets.PROD_SERVER_SSH_KEY }}
-            script: |
-              mkdir -p ${{ secrets.PROD_DEPLOY_PATH }}
-              # 这里添加你的生产环境部署和重启命令
-              # 例如，更复杂的蓝绿部署或滚动更新脚本
-              sudo systemctl restart my-prod-app.service
-              echo "🚀 生产环境部署完成！"
+  prod-deploy:
+    # 6. 手动控制：设置为始终等待手动触发，不依赖push事件
+    if: false # 或使用更精确的条件：github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: production # 关联生产环境，便于权限管理和审计
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code for production
+        uses: actions/checkout@v4
+        with:
+          ref: master # 确保部署的是master分支的代码
+      - name: Deploy to Production
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.PROD_SERVER_HOST }}
+          username: root
+          key: ${{ secrets.PROD_SERVER_SSH_KEY }}
+          script: |
+            mkdir -p ${{ secrets.PROD_DEPLOY_PATH }}
+            # 这里添加你的生产环境部署和重启命令
+            # 例如，更复杂的蓝绿部署或滚动更新脚本
+            sudo systemctl restart my-prod-app.service
+            echo "🚀 生产环境部署完成！"
