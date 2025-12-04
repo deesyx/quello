@@ -5,21 +5,13 @@
 # This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
 
-name: Java CI with Gradle
+name: 部署测试
 
 on:
   push:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
-  workflow_dispatch:
-    inputs:
-      environment:
-        description: "环境"
-        required: true
-        default: "prod"
-        options:
-          - prod
 
 jobs:
   build:
@@ -82,14 +74,3 @@ jobs:
             scp -o StrictHostKeyChecking=no ./deploy-artifact/*.jar root@${{ secrets.TEST_SERVER_HOST }}:${{ secrets.TEST_DEPLOY_PATH }}/
             # 在服务器上重启应用
             ssh -o StrictHostKeyChecking=no root@${{ secrets.TEST_SERVER_HOST }} "sudo systemctl restart my-test-app.service"
-
-  prod-deploy:
-    # 6. 手动控制：设置为始终等待手动触发，不依赖push事件
-    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'prod'
-    runs-on: ubuntu-latest
-    environment: production # 关联生产环境，便于权限管理和审计
-    permissions:
-      contents: write
-    steps:
-      - name: 部署生产
-        run: echo "部署生产环境"
