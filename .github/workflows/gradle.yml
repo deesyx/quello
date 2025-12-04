@@ -85,7 +85,7 @@ jobs:
 
   prod-deploy:
     # 6. 手动控制：设置为始终等待手动触发，不依赖push事件
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'prod'
     runs-on: ubuntu-latest
     environment: production # 关联生产环境，便于权限管理和审计
     permissions:
