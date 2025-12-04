@@ -51,12 +51,52 @@ jobs:
     # - name: Build with Gradle 8.9
     #   run: gradle build
 
-  test:
-
+  test-deploy:
+    # 3. 依赖构建任务：仅在 build 任务成功后才运行
+    needs: build
     runs-on: ubuntu-latest
+    # 4. 环境标识：在GitHub界面中归类显示
+    environment: test
     permissions:
       contents: write
-
     steps:
-      - name: 打印
-        run: echo "hello world"
+      - name: Deploy to Test Server
+        uses: appleboy/ssh-action@v0.1.10 # 一个流行的SSH连接Action
+        with:
+          host: ${{ secrets.TEST_SERVER_HOST }}
+          username: root # 或你的服务器用户名
+          key: ${{ secrets.TEST_SERVER_SSH_KEY }}
+          # 5. 部署脚本示例：传输JAR包并重启服务
+          script: |
+            # 创建目录（如果不存在）
+            mkdir -p ${{ secrets.TEST_DEPLOY_PATH }}
+            # 使用SCP或从构建产物下载JAR包（此处假设已通过上传/下载artifact步骤获取）
+            # 例如：scp ./build/libs/*.jar user@host:${{ secrets.TEST_DEPLOY_PATH }}/
+            # 重启你的应用服务（示例使用systemd）
+            sudo systemctl restart my-test-app.service
+            echo "部署到测试环境完成！"
+
+    prod-deploy:
+      # 6. 手动控制：设置为始终等待手动触发，不依赖push事件
+      if: false # 或使用更精确的条件：github.event_name == 'workflow_dispatch'
+      runs-on: ubuntu-latest
+      environment: production # 关联生产环境，便于权限管理和审计
+      permissions:
+        contents: write
+      steps:
+        - name: Checkout code for production
+          uses: actions/checkout@v4
+          with:
+            ref: master # 确保部署的是master分支的代码
+        - name: Deploy to Production
+          uses: appleboy/ssh-action@v0.1.10
+          with:
+            host: ${{ secrets.PROD_SERVER_HOST }}
+            username: root
+            key: ${{ secrets.PROD_SERVER_SSH_KEY }}
+            script: |
+              mkdir -p ${{ secrets.PROD_DEPLOY_PATH }}
+              # 这里添加你的生产环境部署和重启命令
+              # 例如，更复杂的蓝绿部署或滚动更新脚本
+              sudo systemctl restart my-prod-app.service
+              echo "🚀 生产环境部署完成！"
