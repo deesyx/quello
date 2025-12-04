@@ -40,16 +40,12 @@ jobs:
       - name: Build with Gradle Wrapper
         run: ./gradlew build
 
-    # NOTE: The Gradle Wrapper is the default and recommended way to run Gradle (https://docs.gradle.org/current/userguide/gradle_wrapper.html).
-    # If your project does not have the Gradle Wrapper configured, you can use the following configuration to run Gradle with a specified version.
-    #
-    # - name: Setup Gradle
-    #   uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
-    #   with:
-    #     gradle-version: '8.9'
-    #
-    # - name: Build with Gradle 8.9
-    #   run: gradle build
+      - name: Upload JAR Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: application-jar # 为这个Artifact命名，下载时需要用到
+          path: build/libs/*.jar # Gradle默认将JAR包输出到这个目录
+          retention-days: 7 # 可选：Artifact在GitHub上的保留天数（默认90天）
 
   test-deploy:
     # 3. 依赖构建任务：仅在 build 任务成功后才运行
@@ -60,21 +56,24 @@ jobs:
     permissions:
       contents: write
     steps:
+      # +++ 新增：下载 build 任务上传的 Artifact +++
+      - name: Download JAR Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: application-jar # 必须与上传时的名称一致
+          path: ./deploy-artifact/ # 下载到本步骤的哪个目录（可自定义）
+      # 后续部署步骤：现在 JAR 包已位于 ./deploy-artifact/ 目录下
       - name: Deploy to Test Server
-        uses: appleboy/ssh-action@v0.1.10 # 一个流行的SSH连接Action
+        uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.TEST_SERVER_HOST }}
           username: root # 或你的服务器用户名
           key: ${{ secrets.TEST_SERVER_SSH_KEY }}
-          # 5. 部署脚本示例：传输JAR包并重启服务
           script: |
-            # 创建目录（如果不存在）
-            mkdir -p ${{ secrets.TEST_DEPLOY_PATH }}
-            # 使用SCP或从构建产物下载JAR包（此处假设已通过上传/下载artifact步骤获取）
-            # 例如：scp ./build/libs/*.jar user@host:${{ secrets.TEST_DEPLOY_PATH }}/
-            # 重启你的应用服务（示例使用systemd）
-            sudo systemctl restart my-test-app.service
-            echo "部署到测试环境完成！"
+            # 将JAR包从运行器上传到测试服务器
+            scp -o StrictHostKeyChecking=no ./deploy-artifact/*.jar root@${{ secrets.TEST_SERVER_HOST }}:${{ secrets.TEST_DEPLOY_PATH }}/
+            # 在服务器上重启应用
+            ssh -o StrictHostKeyChecking=no root@${{ secrets.TEST_SERVER_HOST }} "sudo systemctl restart my-test-app.service"
 
   prod-deploy:
     # 6. 手动控制：设置为始终等待手动触发，不依赖push事件
@@ -84,19 +83,5 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Checkout code for production
-        uses: actions/checkout@v4
-        with:
-          ref: master # 确保部署的是master分支的代码
-      - name: Deploy to Production
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: ${{ secrets.PROD_SERVER_HOST }}
-          username: root
-          key: ${{ secrets.PROD_SERVER_SSH_KEY }}
-          script: |
-            mkdir -p ${{ secrets.PROD_DEPLOY_PATH }}
-            # 这里添加你的生产环境部署和重启命令
-            # 例如，更复杂的蓝绿部署或滚动更新脚本
-            sudo systemctl restart my-prod-app.service
-            echo "🚀 生产环境部署完成！"
+      - name: 部署生产
+        run: echo "部署生产环境"
